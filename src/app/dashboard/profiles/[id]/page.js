@@ -7,7 +7,7 @@ import { Input, Select, Textarea } from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import useProfileStore from '@/store/profileStore'
 import { PageLoader } from '@/components/ui/LoadingSpinner'
-import styles from '../../new/page.module.css'
+import styles from '../new/page.module.css'
 
 const skillLevels = ['Beginner', 'Intermediate', 'Advanced', 'Expert']
 const markets = ['Budget', 'Standard', 'Premium']
