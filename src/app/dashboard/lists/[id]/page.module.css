@@ -1,0 +1,138 @@
+.page { max-width: 900px; display: flex; flex-direction: column; gap: var(--space-8); }
+
+.topBar {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  flex-wrap: wrap; gap: var(--space-4);
+}
+
+.back {
+  font-size: 13px; color: var(--color-text-muted);
+  background: none; border: none; cursor: pointer;
+  margin-bottom: var(--space-2); display: block;
+  transition: color var(--transition);
+}
+.back:hover { color: var(--color-text); }
+
+.meta { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.prof { font-size: 14px; font-weight: 600; color: var(--color-text-soft); }
+
+.saveRow { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+
+.savedMsg { font-size: 13px; color: var(--color-accent); font-weight: 500; }
+.errorMsg { font-size: 13px; color: #f87171; }
+
+/* Title section */
+.titleSection { display: flex; flex-direction: column; gap: var(--space-4); }
+
+/* Section title */
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 600;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Packages */
+.packages { display: flex; flex-direction: column; gap: var(--space-6); }
+
+.package {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.pkgHeader { display: flex; align-items: flex-end; gap: var(--space-4); flex-wrap: wrap; }
+.pkgHeader > div { flex: 1; min-width: 160px; }
+
+.miniLabel { font-size: 12px; color: var(--color-text-muted); margin-bottom: var(--space-2); display: block; }
+
+.servicesEdit, .addonsEdit { display: flex; flex-direction: column; gap: var(--space-2); }
+
+.addonRow { display: flex; gap: var(--space-3); align-items: flex-start; }
+
+/* Upsells */
+.upsellGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-4); }
+
+.upsellCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex; flex-direction: column; gap: var(--space-4);
+}
+
+/* Footer */
+.footer {
+  display: flex; align-items: center; gap: var(--space-4);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+/* Public Toggle */
+.publicToggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-right: var(--space-4);
+}
+
+.publicLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-border);
+  transition: .4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--color-accent);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.copyBtn {
+  font-size: 12px;
+  padding: var(--space-2) var(--space-3);
+}

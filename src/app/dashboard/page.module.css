@@ -1,0 +1,110 @@
+.page { max-width: 900px; }
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-8);
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.greeting {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+}
+
+.sub { font-size: 14px; color: var(--color-text-muted); }
+
+/* Stats */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-10);
+}
+
+.statCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.statValue {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.statLabel { font-size: 13px; color: var(--color-text-muted); }
+
+/* Section */
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: var(--space-4);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  margin-top: var(--space-10);
+}
+
+.viewAll { font-size: 13px; color: var(--color-primary); }
+.viewAll:hover { text-decoration: underline; }
+
+/* Actions */
+.actionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-4);
+}
+
+.actionCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-5) !important;
+}
+
+.actionIcon { font-size: 28px; flex-shrink: 0; }
+.actionLabel { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.actionDesc { font-size: 13px; color: var(--color-text-muted); }
+
+/* Recent lists */
+.listsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.listCard { padding: var(--space-5) !important; }
+.listTitle { 
+  font-size: 14px; 
+  font-weight: 600; 
+  margin-bottom: var(--space-2); 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.listMeta { font-size: 12px; color: var(--color-text-muted); }
+
+.publicIcon {
+  font-size: 14px;
+  opacity: 0.8;
+}

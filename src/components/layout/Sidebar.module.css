@@ -1,0 +1,97 @@
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  width: var(--sidebar-w);
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-6) 0;
+  z-index: 50;
+}
+
+/* Brand */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-4);
+}
+
+.logo {
+  font-size: 22px;
+  filter: hue-rotate(200deg);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Nav */
+.nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: 0 var(--space-3);
+}
+
+.link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  transition: color var(--transition), background var(--transition);
+  overflow: hidden;
+}
+
+.link:hover { color: var(--color-text); background: var(--color-surface-2); }
+.link.active { color: var(--color-primary); font-weight: 600; }
+
+.indicator {
+  position: absolute;
+  inset: 0;
+  background: var(--color-primary-glow);
+  border-radius: var(--radius-md);
+  z-index: 0;
+}
+
+.linkIcon, .link span:last-child {
+  position: relative;
+  z-index: 1;
+}
+
+.linkIcon {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+/* Logout */
+.logout {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  margin: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--color-text-muted);
+  transition: color var(--transition), background var(--transition);
+  cursor: pointer;
+}
+.logout:hover { color: #f87171; background: rgba(248,113,113,0.08); }

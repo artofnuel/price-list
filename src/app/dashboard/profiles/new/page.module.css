@@ -1,0 +1,167 @@
+.page {
+  max-width: 600px;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.header { }
+
+.title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+}
+
+.sub { font-size: 14px; color: var(--color-text-muted); }
+
+/* Steps indicator */
+.steps {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+  position: relative;
+}
+
+.step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: calc(100% + 4px);
+  top: 14px;
+  width: 100%;
+  height: 1px;
+  background: var(--color-border);
+  z-index: 0;
+}
+
+.stepDot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.stepLabel {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.stepActive .stepDot {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 0 10px var(--color-primary-glow);
+}
+
+.stepDone .stepDot {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+/* Form area */
+.formArea {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  min-height: 280px;
+  overflow: hidden;
+}
+
+.formStep {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Skill picker */
+.skillGroup { display: flex; flex-direction: column; gap: var(--space-2); }
+.label { font-size: 13px; font-weight: 500; color: var(--color-text-soft); }
+
+.skillOptions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.skillOption {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all var(--transition);
+}
+
+.skillOption:hover {
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.skillSelected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-glow);
+  color: var(--color-primary);
+}
+
+.hint { font-size: 12px; color: var(--color-text-muted); }
+
+/* Review */
+.reviewTitle {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+
+.reviewRow {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-soft);
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.reviewKey { font-size: 13px; color: var(--color-text-muted); flex-shrink: 0; }
+.reviewVal { font-size: 13px; font-weight: 500; text-align: right; }
+
+.error {
+  font-size: 13px;
+  color: #f87171;
+  background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248,113,113,0.2);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+}
+
+/* Navigation buttons */
+.nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
