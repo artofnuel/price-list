@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
@@ -12,7 +12,7 @@ import { PageLoader } from '@/components/ui/LoadingSpinner'
 import usePriceListStore from '@/store/priceListStore'
 import styles from './page.module.css'
 
-export default function GeneratePage() {
+function GeneratePageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const preselectedId = searchParams.get('profileId')
@@ -267,5 +267,13 @@ export default function GeneratePage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function GeneratePage() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <GeneratePageContent />
+    </Suspense>
   )
 }
