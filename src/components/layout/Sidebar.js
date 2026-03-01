@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import useAuthStore from '@/store/authStore'
 import styles from './Sidebar.module.css'
@@ -18,6 +19,14 @@ export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname()
   const router = useRouter()
   const clearAuth = useAuthStore((s) => s.clearAuth)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   async function handleLogout() {
     const supabase = createClient()
@@ -27,7 +36,7 @@ export default function Sidebar({ isOpen, onClose }) {
   }
 
   const handleLinkClick = () => {
-    if (window.innerWidth <= 768) {
+    if (isMobile) {
       onClose()
     }
   }
@@ -49,7 +58,7 @@ export default function Sidebar({ isOpen, onClose }) {
       <motion.aside
         className={[styles.sidebar, isOpen ? styles.open : ''].join(' ')}
         initial={false}
-        animate={window.innerWidth <= 768 ? (isOpen ? { x: 0 } : { x: '-100%' }) : { x: 0, opacity: 1 }}
+        animate={isMobile ? (isOpen ? { x: 0 } : { x: '-100%' }) : { x: 0, opacity: 1 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
       >
         {/* Brand & Close */}

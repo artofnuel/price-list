@@ -55,7 +55,7 @@ export default function ListsPage() {
   }
 
   function copyLink(id) {
-    const url = `${window.location.origin}/price/${id}`
+    const url = `${window?.location.origin}/price/${id}`
     navigator.clipboard.writeText(url)
     setCopyingId(id)
     setTimeout(() => setCopyingId(null), 2000)
