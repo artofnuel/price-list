@@ -105,7 +105,7 @@ export default function ListEditorPage() {
   }
 
   function copyLink() {
-    const url = `${window.location.origin}/price/${id}`
+    const url = `${window?.location.origin}/price/${id}`
     navigator.clipboard.writeText(url)
     setCopying(true)
     setTimeout(() => setCopying(false), 2000)
