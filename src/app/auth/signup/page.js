@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
+import { getBaseUrl } from '@/lib/utils/url'
 import { Input } from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import styles from '../auth.form.module.css'
@@ -29,7 +30,7 @@ export default function SignupPage() {
       const { error: authError } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${location.origin}/auth/callback` },
+        options: { emailRedirectTo: `${getBaseUrl()}/auth/callback` },
       })
       if (authError) throw authError
       setSuccess(true)

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import Button from '@/components/ui/Button'
+import useAuthStore from '@/store/authStore'
 import styles from './page.module.css'
 
 const features = [
@@ -39,6 +40,8 @@ const itemVariants = {
 }
 
 export default function LandingPage() {
+  const user = useAuthStore((s) => s.user)
+
   return (
     <div className={styles.page}>
       {/* Header */}
@@ -49,12 +52,20 @@ export default function LandingPage() {
             <span className={styles.brandName}>PriceForge</span>
           </div>
           <div className={styles.headerActions}>
-            <Link href="/auth/login">
-              <Button variant="ghost" size="sm">Sign In</Button>
-            </Link>
-            <Link href="/auth/signup">
-              <Button variant="primary" size="sm">Get Started</Button>
-            </Link>
+            {user ? (
+              <Link href="/dashboard">
+                <Button variant="primary" size="sm">Go to Dashboard</Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/auth/login">
+                  <Button variant="ghost" size="sm">Sign In</Button>
+                </Link>
+                <Link href="/auth/signup">
+                  <Button variant="primary" size="sm">Get Started</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -80,12 +91,20 @@ export default function LandingPage() {
             PriceForge uses AI to generate structured, realistic price lists tailored to your profession, experience, and market — in seconds.
           </motion.p>
           <motion.div className={styles.heroCta} variants={itemVariants}>
-            <Link href="/auth/signup">
-              <Button variant="primary" size="xl">Generate My Price List →</Button>
-            </Link>
-            <Link href="/auth/login">
-              <Button variant="ghost" size="lg">Sign In</Button>
-            </Link>
+            {user ? (
+              <Link href="/dashboard">
+                <Button variant="primary" size="xl">Go to Dashboard →</Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/auth/signup">
+                  <Button variant="primary" size="xl">Generate My Price List →</Button>
+                </Link>
+                <Link href="/auth/login">
+                  <Button variant="ghost" size="lg">Sign In</Button>
+                </Link>
+              </>
+            )}
           </motion.div>
         </motion.div>
       </section>
@@ -132,9 +151,15 @@ export default function LandingPage() {
           >
             <h2 className={styles.ctaTitle}>Ready to know your worth?</h2>
             <p className={styles.ctaDesc}>Join professionals who price confidently.</p>
-            <Link href="/auth/signup">
-              <Button variant="primary" size="lg">Start for Free →</Button>
-            </Link>
+            {user ? (
+              <Link href="/dashboard">
+                <Button variant="primary" size="lg">Go to Dashboard →</Button>
+              </Link>
+            ) : (
+              <Link href="/auth/signup">
+                <Button variant="primary" size="lg">Start for Free →</Button>
+              </Link>
+            )}
           </motion.div>
         </div>
       </section>
