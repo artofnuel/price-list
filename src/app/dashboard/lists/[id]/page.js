@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
@@ -24,6 +24,8 @@ export default function ListEditorPage() {
   const [error, setError] = useState('')
   const [isPublic, setIsPublic] = useState(false)
   const [copying, setCopying] = useState(false)
+  const [autoSaving, setAutoSaving] = useState(false)
+  const [autoSaved, setAutoSaved] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -43,6 +45,32 @@ export default function ListEditorPage() {
     }
     load()
   }, [id])
+
+  // Auto-save the is_public toggle immediately on change
+  const handleTogglePublic = useCallback(async (newValue) => {
+    setIsPublic(newValue)
+    setAutoSaving(true)
+    setAutoSaved(false)
+    try {
+      const supabase = createClient()
+      const { data: updated, error: dbErr } = await supabase
+        .from('price_lists')
+        .update({ is_public: newValue })
+        .eq('id', id)
+        .select()
+        .single()
+      if (dbErr) throw dbErr
+      updatePriceLists(updated)
+      setAutoSaved(true)
+      setTimeout(() => setAutoSaved(false), 3000)
+    } catch (err) {
+      setError(err.message)
+      // Revert the toggle if the save fails
+      setIsPublic(!newValue)
+    } finally {
+      setAutoSaving(false)
+    }
+  }, [id, updatePriceLists])
 
   function updateTitle(val) { setData((d) => ({ ...d, title: val })) }
   function updateSummary(val) { setData((d) => ({ ...d, summary: val })) }
@@ -131,11 +159,14 @@ export default function ListEditorPage() {
               <input 
                 type="checkbox" 
                 checked={isPublic} 
-                onChange={(e) => setIsPublic(e.target.checked)} 
+                onChange={(e) => handleTogglePublic(e.target.checked)} 
+                disabled={autoSaving}
               />
               <span className={styles.slider}></span>
             </label>
             <span className={styles.publicLabel}>{isPublic ? 'Public' : 'Private'}</span>
+            {autoSaving && <span className={styles.autoSaveMsg}>⏳ Saving…</span>}
+            {autoSaved && !autoSaving && <span className={styles.autoSavedMsg}>✓ Visibility saved</span>}
           </div>
 
           {isPublic && (
@@ -149,6 +180,16 @@ export default function ListEditorPage() {
           <Button variant="primary" size="md" loading={saving} onClick={handleSave}>💾 Save Changes</Button>
         </div>
       </div>
+
+      {/* Public visibility hint banner */}
+      {isPublic && (
+        <div className={styles.publicBanner}>
+          🌐 This price list is <strong>public</strong> — anyone with the link can view it.
+          <button className={styles.bannerCopy} onClick={copyLink}>
+            {copying ? '✓ Link copied!' : 'Copy shareable link →'}
+          </button>
+        </div>
+      )}
 
       {/* Title & Summary */}
       <div className={styles.titleSection}>

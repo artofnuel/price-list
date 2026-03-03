@@ -8,7 +8,8 @@
   gap: var(--space-8);
 }
 
-.header { }
+
+
 
 .title {
   font-family: var(--font-display);
@@ -157,6 +158,67 @@
   border: 1px solid rgba(248,113,113,0.2);
   border-radius: var(--radius-sm);
   padding: var(--space-3) var(--space-4);
+}
+
+/* Toggle */
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+}
+
+.toggleInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toggleLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.toggleHint {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.toggleBtn {
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--color-border);
+  border: none;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.25s ease;
+}
+
+.toggleBtn.toggleOn {
+  background: var(--color-primary);
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.25s ease;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.toggleOn .toggleKnob {
+  transform: translateX(20px);
 }
 
 /* Navigation buttons */

@@ -23,6 +23,8 @@ export function parseGeneratedList(rawText) {
     if (!parsed.title) {
       parsed.title = `${parsed.profession || 'Professional'} Price List`
     }
+    // Preserve currency metadata if present (used for display on the public page)
+    // These are set by the AI when a region-specific currency is requested.
 
     return parsed
   } catch (err) {

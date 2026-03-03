@@ -9,7 +9,7 @@ import Button from '@/components/ui/Button'
 import useProfileStore from '@/store/profileStore'
 import styles from './page.module.css'
 
-const STEPS = ['Profession', 'Experience', 'Services', 'Review']
+const STEPS = ['Profession', 'Experience', 'Services', 'Identity', 'Review']
 
 const skillLevels = ['Beginner', 'Intermediate', 'Advanced', 'Expert']
 const markets = ['Budget', 'Standard', 'Premium']
@@ -47,6 +47,9 @@ export default function NewProfilePage() {
     target_market: 'Standard',
     region: '',
     servicesRaw: '',
+    display_name: '',
+    portfolio_url: '',
+    show_name_publicly: false,
   })
 
   function update(field, value) {
@@ -76,6 +79,9 @@ export default function NewProfilePage() {
           target_market: form.target_market,
           region: form.region.trim() || null,
           services,
+          display_name: form.display_name.trim() || null,
+          portfolio_url: form.portfolio_url.trim() || null,
+          show_name_publicly: form.show_name_publicly,
         })
         .select()
         .single()
@@ -149,6 +155,40 @@ export default function NewProfilePage() {
 
             {step === 3 && (
               <motion.div key="step3" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.25 }} className={styles.formStep}>
+                <Input
+                  id="display_name"
+                  label="Your Name (optional)"
+                  placeholder="e.g. Alex Johnson"
+                  value={form.display_name}
+                  onChange={(e) => update('display_name', e.target.value)}
+                />
+                <Input
+                  id="portfolio_url"
+                  label="Portfolio Link (optional)"
+                  placeholder="e.g. https://alexdesigns.com"
+                  type="url"
+                  value={form.portfolio_url}
+                  onChange={(e) => update('portfolio_url', e.target.value)}
+                />
+                <div className={styles.toggleRow}>
+                  <div className={styles.toggleInfo}>
+                    <span className={styles.toggleLabel}>Show name on public price lists</span>
+                    <span className={styles.toggleHint}>Your name will be visible to anyone who views your price list link.</span>
+                  </div>
+                  <button
+                    type="button"
+                    className={[styles.toggleBtn, form.show_name_publicly ? styles.toggleOn : ''].join(' ')}
+                    onClick={() => update('show_name_publicly', !form.show_name_publicly)}
+                    aria-label="Toggle name visibility"
+                  >
+                    <span className={styles.toggleKnob} />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {step === 4 && (
+              <motion.div key="step4" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.25 }} className={styles.formStep}>
                 <h3 className={styles.reviewTitle}>Profile Summary</h3>
                 {[
                   ['Profession', form.profession],
@@ -157,6 +197,9 @@ export default function NewProfilePage() {
                   ['Target Market', form.target_market],
                   ['Region', form.region || 'Not specified'],
                   ['Services', form.servicesRaw.split('\n').filter(Boolean).join(', ') || 'None'],
+                  ['Display Name', form.display_name || 'Not specified'],
+                  ['Portfolio', form.portfolio_url || 'Not specified'],
+                  ['Public Name', form.show_name_publicly ? 'Yes – will show on public links' : 'No – name is private'],
                 ].map(([k, v]) => (
                   <div key={k} className={styles.reviewRow}>
                     <span className={styles.reviewKey}>{k}</span>

@@ -60,6 +60,70 @@
   color: var(--text-muted);
 }
 
+/* Creator identity row */
+.creatorRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.creatorName {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.creatorAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.creatorLabel {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.portfolioLink {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  padding: 4px 12px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.portfolioLink:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* Currency indicator */
+.currencyNote {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  background: #f3f4f6;
+  border-radius: 6px;
+  padding: 4px 12px;
+}
+
+
 .title {
   font-size: 3rem;
   font-weight: 800;
