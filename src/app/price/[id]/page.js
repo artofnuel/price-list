@@ -88,8 +88,8 @@ export default function PublicPriceListPage() {
             animate={{ opacity: 1, y: 0 }}
           >
             <div className={styles.profileMeta}>
-              {profile?.target_market && <Badge label={profile.target_market} />}
-              {profile?.skill_level && <Badge label={profile.skill_level} />}
+              {/* {profile?.target_market && <Badge label={profile.target_market} />} */}
+              {/* {profile?.skill_level && <Badge label={profile.skill_level} />} */}
               {profile?.profession && <span className={styles.profession}>{profile.profession}</span>}
             </div>
 
@@ -117,11 +117,11 @@ export default function PublicPriceListPage() {
             <h1 className={styles.title}>{data.title}</h1>
             {data.summary && <p className={styles.summary}>{data.summary}</p>}
 
-            {profile?.region && (
+            {/* {profile?.region && (
               <div className={styles.currencyNote}>
                 💱 Prices displayed in <strong>{currency.name}</strong> ({currency.code})
               </div>
-            )}
+            )} */}
           </motion.div>
 
           <div className={styles.packages}>
@@ -134,7 +134,7 @@ export default function PublicPriceListPage() {
                 transition={{ delay: i * 0.1 }}
               >
                 <div className={styles.pkgHeader}>
-                  <div className={styles.pkgBadge}>{pkg.tier}</div>
+                  <div className={styles.pkgBadge}>{pkg.tier} Pricing Tier</div>
                   <h3 className={styles.pkgName}>{pkg.name}</h3>
                   <div className={styles.pkgPrice}>{pkg.priceLabel}</div>
                 </div>
@@ -161,6 +161,7 @@ export default function PublicPriceListPage() {
             ))}
           </div>
 
+
           {data.upsells?.length > 0 && (
             <section className={styles.upsellsSection}>
               <h2 className={styles.sectionTitle}>Stand-alone Services</h2>
@@ -186,7 +187,7 @@ export default function PublicPriceListPage() {
 
       <footer className={styles.footer}>
         <div className={styles.container}>
-          <p>Generated with AI to reflect market standard pricing.</p>
+          {/* <p>Generated with AI to reflect market standard pricing.</p> */}
           <a href="/" className={styles.footerBrand}>
             Powered by <strong>PriceForge</strong>
           </a>
