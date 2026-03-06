@@ -15,15 +15,17 @@ const markets = ['Budget', 'Standard', 'Premium']
 export default function EditProfilePage() {
   const router = useRouter()
   const { id } = useParams()
-  const updateProfile = useProfileStore((s) => s.updateProfile)
+  const { updateProfile, removeProfile } = useProfileStore()
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState('')
   const [form, setForm] = useState({
     profession: '', experience_years: '', skill_level: 'Intermediate',
     target_market: 'Standard', region: '', servicesRaw: '',
     display_name: '', portfolio_url: '', show_name_publicly: false,
+    public_email: '', public_phone: '',
   })
 
   useEffect(() => {
@@ -41,6 +43,8 @@ export default function EditProfilePage() {
           display_name: data.display_name || '',
           portfolio_url: data.portfolio_url || '',
           show_name_publicly: data.show_name_publicly || false,
+          public_email: data.public_email || '',
+          public_phone: data.public_phone || '',
         })
       }
       setLoading(false)
@@ -68,12 +72,29 @@ export default function EditProfilePage() {
           display_name: form.display_name.trim() || null,
           portfolio_url: form.portfolio_url.trim() || null,
           show_name_publicly: form.show_name_publicly,
+          public_email: form.public_email.trim() || null,
+          public_phone: form.public_phone.trim() || null,
         })
         .eq('id', id).select().single()
       if (dbError) throw dbError
       updateProfile(data)
       router.push('/dashboard/profiles')
     } catch (err) { setError(err.message) } finally { setSaving(false) }
+  }
+
+  async function handleDelete() {
+    if (!window.confirm('Are you sure you want to delete this profile? All associated price lists will be deleted.')) return
+    setDeleting(true)
+    try {
+      const supabase = createClient()
+      const { error: dbErr } = await supabase.from('professional_profiles').delete().eq('id', id)
+      if (dbErr) throw dbErr
+      removeProfile(id)
+      router.push('/dashboard/profiles')
+    } catch (err) {
+      setError(err.message)
+      setDeleting(false)
+    }
   }
 
   if (loading) return <PageLoader />
@@ -135,10 +156,31 @@ export default function EditProfilePage() {
             </button>
           </div>
 
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+            <Input
+              id="public_email"
+              label="Public Email (optional)"
+              placeholder="e.g. contact@alex.com"
+              type="email"
+              value={form.public_email}
+              onChange={(e) => update('public_email', e.target.value)}
+            />
+            <Input
+              id="public_phone"
+              label="Public Phone (optional)"
+              placeholder="e.g. +1 234 567 890"
+              value={form.public_phone}
+              onChange={(e) => update('public_phone', e.target.value)}
+            />
+          </div>
+
           {error && <p className={styles.error}>{error}</p>}
           <div className={styles.nav}>
             <Button variant="ghost" size="md" type="button" onClick={() => router.back()}>Cancel</Button>
-            <Button variant="primary" size="md" type="submit" loading={saving}>Save Changes</Button>
+            <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+              <Button variant="ghost" size="md" type="button" loading={deleting} onClick={handleDelete} style={{ color: '#f87171', border: '1px solid rgba(248, 113, 113, 0.2)' }}>Delete</Button>
+              <Button variant="primary" size="md" type="submit" loading={saving} disabled={deleting}>Save Changes</Button>
+            </div>
           </div>
         </form>
       </div>

@@ -14,7 +14,7 @@ import styles from './page.module.css'
 export default function ListEditorPage() {
   const { id } = useParams()
   const router = useRouter()
-  const { updatePriceLists } = usePriceListStore()
+  const { updatePriceLists, removePriceList } = usePriceListStore()
 
   const [list, setList] = useState(null)
   const [data, setData] = useState(null)
@@ -22,6 +22,7 @@ export default function ListEditorPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+  const [deleting, setDeleting] = useState(false)
   const [isPublic, setIsPublic] = useState(false)
   const [copying, setCopying] = useState(false)
   const [autoSaving, setAutoSaving] = useState(false)
@@ -111,6 +112,24 @@ export default function ListEditorPage() {
     })
   }
 
+  async function handleDelete() {
+    if (!window.confirm('Are you sure you want to delete this price list?')) return
+    setDeleting(true)
+    try {
+      const supabase = createClient()
+      const { error: dbErr } = await supabase
+        .from('price_lists')
+        .delete()
+        .eq('id', id)
+      if (dbErr) throw dbErr
+      removePriceList(id)
+      router.push('/dashboard/lists')
+    } catch (err) {
+      setError(err.message)
+      setDeleting(false)
+    }
+  }
+
   async function handleSave() {
     setSaving(true); setSaved(false); setError('')
     try {
@@ -177,7 +196,8 @@ export default function ListEditorPage() {
 
           {saved && <span className={styles.savedMsg}>✓ Saved!</span>}
           {error && <span className={styles.errorMsg}>{error}</span>}
-          <Button variant="primary" size="md" loading={saving} onClick={handleSave}>💾 Save Changes</Button>
+          <Button variant="primary" size="md" loading={saving} onClick={handleSave} disabled={deleting}>💾 Save Changes</Button>
+          <Button variant="ghost" size="md" loading={deleting} onClick={handleDelete} style={{ color: '#f87171', borderColor: 'rgba(248, 113, 113, 0.2)' }}>🗑️ Delete</Button>
         </div>
       </div>
 

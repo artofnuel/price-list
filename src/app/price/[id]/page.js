@@ -21,7 +21,7 @@ export default function PublicPriceListPage() {
         const supabase = createClient()
         const { data, error: sbError } = await supabase
           .from('price_lists')
-          .select('*, professional_profiles(id, profession, skill_level, target_market, region, display_name, portfolio_url, show_name_publicly)')
+          .select('*, professional_profiles(id, profession, skill_level, target_market, region, display_name, portfolio_url, show_name_publicly, public_email, public_phone)')
           .eq('id', id)
           .maybeSingle()
 
@@ -110,6 +110,12 @@ export default function PublicPriceListPage() {
                   >
                     🌐 View Portfolio →
                   </a>
+                )}
+                {(profile.public_email || profile.public_phone) && (
+                  <div className={styles.contactInfo} style={{ display: 'flex', gap: 'var(--space-4)', fontSize: '13px', color: 'var(--color-text-muted)' }}>
+                    {profile.public_email && <a href={`mailto:${profile.public_email}`} className={styles.contactItem} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>📧 {profile.public_email}</a>}
+                    {profile.public_phone && <span className={styles.contactItem} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>📞 {profile.public_phone}</span>}
+                  </div>
                 )}
               </div>
             )}

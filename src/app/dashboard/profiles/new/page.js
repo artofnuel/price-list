@@ -50,6 +50,8 @@ export default function NewProfilePage() {
     display_name: '',
     portfolio_url: '',
     show_name_publicly: false,
+    public_email: '',
+    public_phone: '',
   })
 
   function update(field, value) {
@@ -82,6 +84,8 @@ export default function NewProfilePage() {
           display_name: form.display_name.trim() || null,
           portfolio_url: form.portfolio_url.trim() || null,
           show_name_publicly: form.show_name_publicly,
+          public_email: form.public_email.trim() || null,
+          public_phone: form.public_phone.trim() || null,
         })
         .select()
         .single()
@@ -184,6 +188,23 @@ export default function NewProfilePage() {
                     <span className={styles.toggleKnob} />
                   </button>
                 </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', marginTop: 'var(--space-4)' }}>
+                  <Input
+                    id="public_email"
+                    label="Public Email (optional)"
+                    placeholder="e.g. contact@alex.com"
+                    type="email"
+                    value={form.public_email}
+                    onChange={(e) => update('public_email', e.target.value)}
+                  />
+                  <Input
+                    id="public_phone"
+                    label="Public Phone (optional)"
+                    placeholder="e.g. +1 234 567 890"
+                    value={form.public_phone}
+                    onChange={(e) => update('public_phone', e.target.value)}
+                  />
+                </div>
               </motion.div>
             )}
 
@@ -200,6 +221,8 @@ export default function NewProfilePage() {
                   ['Display Name', form.display_name || 'Not specified'],
                   ['Portfolio', form.portfolio_url || 'Not specified'],
                   ['Public Name', form.show_name_publicly ? 'Yes – will show on public links' : 'No – name is private'],
+                  ['Public Email', form.public_email || 'Not specified'],
+                  ['Public Phone', form.public_phone || 'Not specified'],
                 ].map(([k, v]) => (
                   <div key={k} className={styles.reviewRow}>
                     <span className={styles.reviewKey}>{k}</span>

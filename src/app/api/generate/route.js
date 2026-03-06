@@ -16,7 +16,7 @@ export async function POST(request) {
     }
 
     const genAI = new GoogleGenerativeAI(apiToken)
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite-preview' })
 
     const prompt = buildPrompt(profile, services || [])
     const result = await model.generateContent(prompt)
