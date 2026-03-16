@@ -17,31 +17,35 @@ export async function POST(req) {
   const signature = req.headers.get('x-paystack-signature')
 
   console.log('--- PAYSTACK DEBUG INFO ---')
-  console.log('Header Signature length:', signature?.length)
+  console.log('Header Signature exists:', !!signature)
   console.log('Secret exists:', !!PAYSTACK_SECRET)
+  if (PAYSTACK_SECRET) {
+    console.log('Secret (masked):', PAYSTACK_SECRET.substring(0, 8) + '...' + PAYSTACK_SECRET.substring(PAYSTACK_SECRET.length - 4))
+  }
 
   const hash = crypto.createHmac('sha512', PAYSTACK_SECRET).update(payload).digest('hex')
 
   if (hash !== signature) {
     console.error('CRITICAL: Invalid Paystack signature')
-    console.log('Calculated Hash:', hash.substring(0, 10) + '...')
-    console.log('Received Signature:', signature?.substring(0, 10) + '...')
+    console.log('Calculated Hash starts with:', hash.substring(0, 10))
+    console.log('Received Signature starts with:', signature?.substring(0, 10))
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
 
   const event = JSON.parse(payload)
   console.log('--- PAYSTACK WEBHOOK EVENT VERIFIED ---')
   console.log('Event Type:', event.event)
-  console.log('Event Data exists:', !!event.data)
 
   if (event.event === 'charge.success') {
     const userId = event.data.metadata?.userId
 
-    console.log(`Processing charge.success for user: ${userId}`)
-    console.log('Reference:', event.data.reference)
+    console.log('Metadata Info:')
+    console.log('- User ID:', userId)
+    console.log('- Reference:', event.data.reference)
+    console.log('- Customer Code:', event.data.customer?.customer_code)
 
     if (!userId) {
-      console.error('No userId in Paystack metadata')
+      console.error('CRITICAL: No userId in Paystack metadata. Event metadata:', JSON.stringify(event.data.metadata))
       return NextResponse.json({ received: true })
     }
 

@@ -3,8 +3,8 @@ import Stripe from 'stripe'
 import axios from 'axios'
 import { createClient } from '@/lib/supabase/server'
 
-const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE)
-const PAYSTACK_SECRET = process.env.NEXT_PUBLIC_PAYSTACK
+const stripe = new Stripe(process.env.STRIPE_SECRET)
+const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET
 
 export async function POST(req) {
   try {
