@@ -2,14 +2,14 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 
-const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET)
-const webhookSecret = process.env.NEXT_PUBLIC_STRIPE_WEBHOOK_SECRET
+const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE)
+const webhookSecret = process.env.NEXT_PUBLIC_STRIPE_WEBH
 
 // Use standard @supabase/supabase-js for service role ops
 // This is often more reliable in webhook/service contexts
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_SERVICE
+  process.env.NEXT_PUBLIC_SUPABASE_SERV
 )
 
 export async function POST(req) {
@@ -60,7 +60,7 @@ export async function POST(req) {
           current_period_end: new Date(Date.now() + 32 * 24 * 60 * 60 * 1000).toISOString(),
         })
         .select()
-      
+
       if (error) {
         console.error('Supabase UPSERT error (checkout.session.completed):', JSON.stringify(error))
       } else {
@@ -71,7 +71,7 @@ export async function POST(req) {
 
     case 'invoice.payment_succeeded': {
       const invoice = event.data.object
-      
+
       console.log('Invoice ID:', invoice.id)
       console.log('Subscription ID from Invoice:', invoice.subscription)
 
@@ -114,12 +114,12 @@ export async function POST(req) {
     case 'customer.subscription.deleted': {
       const deletedSub = event.data.object
       console.log(`Processing deletion for subscription: ${deletedSub.id}`)
-      
+
       const { error } = await supabaseAdmin
         .from('subscriptions')
         .update({ status: 'canceled' })
         .eq('provider_subscription_id', deletedSub.id)
-      
+
       if (error) {
         console.error('Supabase DELETE-UPDATE error:', JSON.stringify(error))
       } else {

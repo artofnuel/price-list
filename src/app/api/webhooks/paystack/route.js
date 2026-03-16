@@ -2,20 +2,20 @@ import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { createClient } from '@supabase/supabase-js'
 
-const PAYSTACK_SECRET = process.env.NEXT_PUBLIC_PAYSTACK_SECRET
+const PAYSTACK_SECRET = process.env.NEXT_PUBLIC_PAYSTACK
 
 // Use standard @supabase/supabase-js for service role ops
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_SERVICE
+  process.env.NEXT_PUBLIC_SUPABASE_SERV
 )
 
 export async function POST(req) {
   console.log('>>> PAYSTACK WEBHOOK TRIGGERED <<<')
-  
+
   const payload = await req.text()
   const signature = req.headers.get('x-paystack-signature')
-  
+
   const hash = crypto.createHmac('sha512', PAYSTACK_SECRET).update(payload).digest('hex')
 
   if (hash !== signature) {
@@ -29,7 +29,7 @@ export async function POST(req) {
 
   if (event.event === 'charge.success') {
     const userId = event.data.metadata?.userId
-    
+
     console.log(`Processing charge.success for user: ${userId}`)
     console.log('Reference:', event.data.reference)
 

@@ -9,7 +9,7 @@ export default function BillingPage() {
   const { plan, status, isPremium, renewalDate, provider } = useSubscriptionStore()
   const [loading, setLoading] = useState(false)
   const STRIPE_PUBLISHABLE = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE
-  const PAYSTACK_PUBLIC = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC
+  const PAYSTACK_PUBLIC = process.env.NEXT_PUBLIC_PAYSTACK_PUB
 
   const handleUpgrade = async (gateway) => {
     setLoading(true)
@@ -53,22 +53,21 @@ export default function BillingPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Current Plan Card */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-neutral-900 border border-neutral-800 p-6 rounded-2xl"
         >
           <h2 className="text-xl font-semibold mb-4 text-neutral-200">Current Plan</h2>
           <div className="flex items-center gap-2 mb-2">
-            <span className={`px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wider ${
-              isPremium ? 'bg-amber-500/10 text-amber-500' : 'bg-neutral-800 text-neutral-400'
-            }`}>
+            <span className={`px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wider ${isPremium ? 'bg-amber-500/10 text-amber-500' : 'bg-neutral-800 text-neutral-400'
+              }`}>
               {plan}
             </span>
             <span className="text-sm text-neutral-500">•</span>
             <span className="text-sm text-neutral-400 capitalize">{status || 'No status'}</span>
           </div>
-          
+
           <p className="text-4xl font-bold mt-4 mb-2">
             {isPremium ? '$4' : '$0'}
             <span className="text-base font-normal text-neutral-500"> / month</span>
@@ -79,7 +78,7 @@ export default function BillingPage() {
               <p className="text-sm text-neutral-400">
                 Next billing date: {new Date(renewalDate).toLocaleDateString()}
               </p>
-              <button 
+              <button
                 onClick={handleCancel}
                 disabled={loading}
                 className="w-full py-3 bg-red-600/10 hover:bg-red-600/20 text-red-500 border border-red-500/20 rounded-xl font-medium transition-colors disabled:opacity-50"
@@ -91,14 +90,14 @@ export default function BillingPage() {
 
           {!isPremium && (
             <div className="mt-6 space-y-4">
-              <button 
+              <button
                 onClick={() => handleUpgrade('stripe')}
                 disabled={loading}
                 className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium transition-colors disabled:opacity-50"
               >
                 Upgrade with Stripe
               </button>
-              <button 
+              <button
                 onClick={() => handleUpgrade('paystack')}
                 disabled={loading}
                 className="w-full py-3 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-medium transition-colors disabled:opacity-50"
@@ -110,7 +109,7 @@ export default function BillingPage() {
         </motion.div>
 
         {/* Benefits Card */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}

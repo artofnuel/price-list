@@ -30,7 +30,7 @@ export async function POST(req) {
       },
       {
         headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_PAYSTACK_SECRET}`,
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_PAYSTACK}`,
           'Content-Type': 'application/json'
         }
       }
