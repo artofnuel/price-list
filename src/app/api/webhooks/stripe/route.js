@@ -2,31 +2,41 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 
-const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE)
-const webhookSecret = process.env.NEXT_PUBLIC_STRIPE_WEBH
+const stripe = new Stripe(process.env.STRIPE_SECRET)
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 
 // Use standard @supabase/supabase-js for service role ops
 // This is often more reliable in webhook/service contexts
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_SERV
+  process.env.SUPABASE_SERVICE_ROLE
 )
 
 export async function POST(req) {
-  console.log('>>> WEBHOOK ENDPOINT TRIGGERED <<<')
+  console.log('>>> STRIPE WEBHOOK TRIGGERED <<<')
+
   const payload = await req.text()
   const sig = req.headers.get('stripe-signature')
+
+  console.log('--- DEBUG INFO ---')
+  console.log('Header Signature exists:', !!sig)
+  console.log('Webhook Secret exists:', !!webhookSecret)
+  console.log('Payload Length:', payload?.length)
+  console.log('Payload starts with:', payload?.substring(0, 20))
 
   let event
 
   try {
+    if (!sig || !webhookSecret) {
+      throw new Error('Missing signature or webhook secret')
+    }
     event = stripe.webhooks.constructEvent(payload, sig, webhookSecret)
   } catch (err) {
-    console.error(`Webhook Error: ${err.message}`)
-    return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 })
+    console.error(`Webhook Signature Verification Failed: ${err.message}`)
+    return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 401 })
   }
 
-  console.log('--- STRIPE WEBHOOK EVENT ---')
+  console.log('--- STRIPE WEBHOOK EVENT VERIFIED ---')
   console.log('Event ID:', event.id)
   console.log('Event Type:', event.type)
 

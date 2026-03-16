@@ -2,12 +2,12 @@ import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { createClient } from '@supabase/supabase-js'
 
-const PAYSTACK_SECRET = process.env.NEXT_PUBLIC_PAYSTACK
+const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET
 
 // Use standard @supabase/supabase-js for service role ops
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_SERV
+  process.env.SUPABASE_SERVICE_ROLE
 )
 
 export async function POST(req) {
