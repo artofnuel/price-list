@@ -13,6 +13,45 @@
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
+.page.exporting {
+  background-color: white !important;
+  color: #111827 !important;
+  width: 800px !important;
+  margin: 0 auto !important;
+}
+
+/* Force text visibility on white export background */
+.exporting .creatorLabel,
+.exporting .profession,
+.exporting .contactItem,
+.exporting .contactInfo,
+.exporting .portfolioLink,
+.exporting .currencyNote,
+.exporting .summary,
+.exporting .pkgName,
+.exporting .pkgDesc,
+.exporting .pkgServices li,
+.exporting .addonsTitle,
+.exporting .addon span,
+.exporting .sectionTitle {
+  color: #111827 !important;
+}
+
+.exporting .header, 
+.exporting .footer,
+.exporting button,
+.exporting .brand span:not(img) {
+  display: none !important;
+}
+
+.exporting .main {
+  padding: 40px 0 !important;
+}
+
+.exporting .package {
+  break-inside: avoid;
+}
+
 .container {
   max-width: var(--container-width);
   margin: 0 auto;
@@ -88,12 +127,15 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  line-height: 1; /* Helps html2canvas alignment */
 }
 
 .creatorLabel {
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--text-main);
+  line-height: 1; /* Helps html2canvas alignment */
+  margin-top: 2px;
 }
 
 .portfolioLink {

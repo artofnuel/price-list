@@ -9,6 +9,8 @@ import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Badge from '@/components/ui/Badge'
 import { PageLoader } from '@/components/ui/LoadingSpinner'
+import UpgradeBanner from '@/components/UpgradeBanner'
+import { useSubscriptionStore } from '@/store/subscriptionStore'
 import usePriceListStore from '@/store/priceListStore'
 import styles from './page.module.css'
 
@@ -18,6 +20,7 @@ function GeneratePageContent() {
   const preselectedId = searchParams.get('profileId')
 
   const { setCurrentList } = usePriceListStore()
+  const { isPremium } = useSubscriptionStore()
   const [profiles, setProfiles] = useState([])
   const [selectedProfileId, setSelectedProfileId] = useState(preselectedId || '')
   const [servicesRaw, setServicesRaw] = useState('')
@@ -27,6 +30,7 @@ function GeneratePageContent() {
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
   const [profilesLoading, setProfilesLoading] = useState(true)
+  const [profileListsCount, setProfileListsCount] = useState(0)
 
   useEffect(() => {
     async function load() {
@@ -35,20 +39,48 @@ function GeneratePageContent() {
       if (!user) { setProfilesLoading(false); return }
       const { data } = await supabase.from('professional_profiles').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
       setProfiles(data || [])
-      if (!preselectedId && data?.length > 0) setSelectedProfileId(data[0].id)
-      if (preselectedId) {
-        const p = data?.find((x) => x.id === preselectedId)
+      
+      const initialProfileId = preselectedId || (data?.length > 0 ? data[0].id : '')
+      setSelectedProfileId(initialProfileId)
+      
+      if (initialProfileId) {
+        const p = data?.find((x) => x.id === initialProfileId)
         if (p?.services) setServicesRaw(p.services.join('\n'))
+        
+        // Check list count for the initial profile
+        const { count } = await supabase
+          .from('price_lists')
+          .select('*', { count: 'exact', head: true })
+          .eq('profile_id', initialProfileId)
+        setProfileListsCount(count || 0)
       }
       setProfilesLoading(false)
     }
     load()
   }, [preselectedId])
 
+  const handleProfileChange = async (profileId) => {
+    setSelectedProfileId(profileId)
+    const p = profiles.find((x) => x.id === profileId)
+    if (p?.services) setServicesRaw(p.services.join('\n'))
+    
+    const supabase = createClient()
+    const { count } = await supabase
+      .from('price_lists')
+      .select('*', { count: 'exact', head: true })
+      .eq('profile_id', profileId)
+    setProfileListsCount(count || 0)
+  }
+
   const selectedProfile = profiles.find((p) => p.id === selectedProfileId)
+  const isLimitReached = !isPremium && profileListsCount >= 2
 
   async function handleGenerate() {
     if (!selectedProfile) { setError('Select a profile first.'); return }
+    if (isLimitReached) {
+      setError('You have reached the limit of 2 price lists for this profile. Please upgrade to create unlimited lists.')
+      return
+    }
     setError(''); setResult(null); setSaved(false); setGenerating(true)
     try {
       const services = servicesRaw.split('\n').map((s) => s.trim()).filter(Boolean)
@@ -70,6 +102,10 @@ function GeneratePageContent() {
 
   async function handleSave() {
     if (!result || !selectedProfile) return
+    if (isLimitReached) {
+        setError('Limit reached. Upgrade to save more lists.')
+        return
+    }
     setSaving(true)
     try {
       const supabase = createClient()
@@ -99,6 +135,12 @@ function GeneratePageContent() {
         <p className={styles.sub}>Select your profile and services — let AI do the rest</p>
       </div>
 
+      {isLimitReached && (
+        <div className="mb-8">
+          <UpgradeBanner message={`You've reached the free limit for "${selectedProfile?.profession}" (2/2 lists).`} />
+        </div>
+      )}
+
       {profiles.length === 0 ? (
         <Card className={styles.noProfiles}>
           <p>You need at least one profession profile before generating pricing.</p>
@@ -116,11 +158,7 @@ function GeneratePageContent() {
                   id="profile-select"
                   label="Profession Profile"
                   value={selectedProfileId}
-                  onChange={(e) => {
-                    setSelectedProfileId(e.target.value)
-                    const p = profiles.find((x) => x.id === e.target.value)
-                    if (p?.services) setServicesRaw(p.services.join('\n'))
-                  }}
+                  onChange={(e) => handleProfileChange(e.target.value)}
                 >
                   {profiles.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -142,6 +180,9 @@ function GeneratePageContent() {
                       {selectedProfile.region && <Badge label={selectedProfile.region} />}
                     </div>
                     <p className={styles.previewDetail}>{selectedProfile.experience_years} yr(s) experience</p>
+                    <p className={`text-xs mt-1 ${isLimitReached ? 'text-red-400' : 'text-neutral-500'}`}>
+                      Lists used: {profileListsCount}/2
+                    </p>
                   </motion.div>
                 )}
 
@@ -157,8 +198,15 @@ function GeneratePageContent() {
                 {error && <p className={styles.error}>{error}</p>}
 
                 <motion.div whileTap={{ scale: 0.98 }}>
-                  <Button variant="primary" size="lg" fullWidth loading={generating} onClick={handleGenerate}>
-                    {generating ? 'Generating...' : '✨ Generate Price List'}
+                  <Button 
+                    variant="primary" 
+                    size="lg" 
+                    fullWidth 
+                    loading={generating} 
+                    onClick={handleGenerate}
+                    disabled={isLimitReached}
+                  >
+                    {generating ? 'Generating...' : isLimitReached ? 'Limit Reached' : '✨ Generate Price List'}
                   </Button>
                 </motion.div>
               </div>
@@ -203,7 +251,7 @@ function GeneratePageContent() {
                       <h2 className={styles.resultTitle}>{result.title}</h2>
                       {result.summary && <p className={styles.resultSummary}>{result.summary}</p>}
                     </div>
-                    <Button variant="primary" size="md" loading={saving} onClick={handleSave}>
+                    <Button variant="primary" size="md" loading={saving} onClick={handleSave} disabled={isLimitReached}>
                       💾 Save List
                     </Button>
                   </div>

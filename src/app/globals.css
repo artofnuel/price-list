@@ -1,10 +1,10 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Raleway:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
 
 /* ─────────────────────────────────────────
    Design Tokens
-───────────────────────────────────────── */
-:root {
+ ───────────────────────────────────────── */
+@theme {
   /* Colors */
   --color-bg:          #0d0f14;
   --color-surface:     #161a23;
@@ -37,16 +37,16 @@
   --font-body:    'Poppins', sans-serif;
 
   /* Spacing */
-  --space-1:  4px;
-  --space-2:  8px;
-  --space-3:  12px;
-  --space-4:  16px;
-  --space-5:  20px;
-  --space-6:  24px;
-  --space-8:  32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
+  --spacing-1:  4px;
+  --spacing-2:  8px;
+  --spacing-3:  12px;
+  --spacing-4:  16px;
+  --spacing-5:  20px;
+  --spacing-6:  24px;
+  --spacing-8:  32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
 
   /* Radii */
   --radius-sm:  8px;
@@ -62,22 +62,31 @@
   --shadow-glow:0 0 30px var(--color-primary-glow);
 
   /* Transitions */
-  --transition: 0.2s ease;
-  --transition-slow: 0.4s ease;
+  --animate-transition: 0.2s ease;
+  --animate-transition-slow: 0.4s ease;
 
   /* Sidebar width */
-  --sidebar-w: 240px;
+  --width-sidebar: 240px;
+}
+
+:root {
+  --sidebar-w: var(--width-sidebar);
+  --space-1: var(--spacing-1);
+  --space-2: var(--spacing-2);
+  --space-3: var(--spacing-3);
+  --space-4: var(--spacing-4);
+  --space-5: var(--spacing-5);
+  --space-6: var(--spacing-6);
+  --space-8: var(--spacing-8);
+  --space-10: var(--spacing-10);
+  --space-12: var(--spacing-12);
+  --space-16: var(--spacing-16);
 }
 
 /* ─────────────────────────────────────────
    Reset & Base
-───────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
+ ───────────────────────────────────────── */
+/* Reset & Base is handled by Tailwind Preflight */
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
@@ -123,7 +132,7 @@ img, svg {
 
 /* ─────────────────────────────────────────
    Utility Classes
-───────────────────────────────────────── */
+ ───────────────────────────────────────── */
 .container {
   width: 100%;
   max-width: 1100px;
@@ -143,7 +152,7 @@ img, svg {
 
 /* ─────────────────────────────────────────
    Scrollbar
-───────────────────────────────────────── */
+ ───────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-bg); }
 ::-webkit-scrollbar-thumb {
@@ -154,7 +163,7 @@ img, svg {
 
 /* ─────────────────────────────────────────
    Selection
-───────────────────────────────────────── */
+ ───────────────────────────────────────── */
 ::selection {
   background: var(--color-primary-glow);
   color: var(--color-text);

@@ -7,6 +7,8 @@ import { createClient } from '@/lib/supabase/client'
 import { Input, Select, Textarea } from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import useProfileStore from '@/store/profileStore'
+import { useSubscriptionStore } from '@/store/subscriptionStore'
+import UpgradeBanner from '@/components/UpgradeBanner'
 import styles from './page.module.css'
 
 const STEPS = ['Profession', 'Experience', 'Services', 'Identity', 'Review']
@@ -36,6 +38,8 @@ const slideVariants = {
 export default function NewProfilePage() {
   const router = useRouter()
   const addProfile = useProfileStore((s) => s.addProfile)
+  const profiles = useProfileStore((s) => s.profiles)
+  const { isPremium } = useSubscriptionStore()
 
   const [step, setStep] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -100,6 +104,21 @@ export default function NewProfilePage() {
     }
   }
 
+  if (!isPremium && profiles.length >= 2) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.inner}>
+          <div className="mt-8">
+            <UpgradeBanner message="You've reached your free profile limit (2/2)." className="mb-8" />
+            <Button variant="ghost" size="md" onClick={() => router.push('/dashboard')}>
+              ← Back to Dashboard
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className={styles.page}>
       <div className={styles.inner}>
@@ -118,7 +137,7 @@ export default function NewProfilePage() {
                 <Select id="market" label="Target Market" value={form.target_market} onChange={(e) => update('target_market', e.target.value)}>
                   {markets.map((m) => <option key={m} value={m}>{m}</option>)}
                 </Select>
-                <Input id="region" label="Country / Region (optional)" placeholder="e.g. United States, UK, Nigeria" value={form.region} onChange={(e) => update('region', e.target.value)} />
+                <Input id="region" label="Client's Region" placeholder="e.g. United States, UK, Nigeria" value={form.region} onChange={(e) => update('region', e.target.value)} />
               </motion.div>
             )}
 

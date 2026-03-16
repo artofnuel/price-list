@@ -13,6 +13,7 @@ const navItems = [
   { href: '/dashboard/profiles', label: 'Profiles', icon: '👤' },
   { href: '/dashboard/generate', label: 'Generate', icon: '✨' },
   { href: '/dashboard/lists', label: 'Saved Lists', icon: '📋' },
+  { href: '/dashboard/billing', label: 'Billing', icon: '💳' },
 ]
 
 export default function Sidebar({ isOpen, onClose }) {
@@ -63,12 +64,8 @@ export default function Sidebar({ isOpen, onClose }) {
       >
         {/* Brand & Close */}
         <div className={styles.brand}>
-          <div className={styles.brandInfo}>
-            <span className={styles.logo}>⚡</span>
-            <span className={styles.name}>PriceForge</span>
-          </div>
           <button className={styles.closeBtn} onClick={onClose} aria-label="Close Sidebar">
-            ✕
+            ✕ Close
           </button>
         </div>
 

@@ -7,6 +7,8 @@ import { createClient } from '@/lib/supabase/client'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import { PageLoader } from '@/components/ui/LoadingSpinner'
+import UpgradeBanner from '@/components/UpgradeBanner'
+import { useSubscriptionStore } from '@/store/subscriptionStore'
 import styles from './page.module.css'
 
 const containerVariants = {
@@ -16,9 +18,10 @@ const containerVariants = {
 
 export default function DashboardPage() {
   const [user, setUser] = useState(null)
-  const [stats, setStats] = useState({ profiles: 0, lists: 0 })
+  const [stats, setStats] = useState({ profiles: 0, lists: 0, totalViews: 0 })
   const [recentLists, setRecentLists] = useState([])
   const [loading, setLoading] = useState(true)
+  const { isPremium } = useSubscriptionStore()
 
   useEffect(() => {
     async function load() {
@@ -27,17 +30,20 @@ export default function DashboardPage() {
       setUser(user)
       if (!user) { setLoading(false); return }
 
-      const [{ count: pCount }, { count: lCount }, { data: recent }] = await Promise.all([
+      const [{ count: pCount }, { count: lCount }, { data: listData }, { data: recent }] = await Promise.all([
         supabase.from('professional_profiles').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
         supabase.from('price_lists').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+        supabase.from('price_lists').select('views_count').eq('user_id', user.id),
         supabase.from('price_lists')
-          .select('id, title, created_at, is_public, professional_profiles(profession)')
+          .select('id, title, created_at, is_public, views_count, professional_profiles(profession)')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(4),
       ])
 
-      setStats({ profiles: pCount || 0, lists: lCount || 0 })
+      const totalViews = listData?.reduce((acc, curr) => acc + (curr.views_count || 0), 0) || 0
+
+      setStats({ profiles: pCount || 0, lists: lCount || 0, totalViews })
       setRecentLists(recent || [])
       setLoading(false)
     }
@@ -47,6 +53,7 @@ export default function DashboardPage() {
   if (loading) return <PageLoader />
 
   const firstName = user?.email?.split('@')[0] || 'there'
+  const isProfileLimitReached = !isPremium && stats.profiles >= 2
 
   return (
     <div className={styles.page}>
@@ -54,7 +61,15 @@ export default function DashboardPage() {
         initial="hidden"
         animate="visible"
         variants={containerVariants}
+        className="space-y-8"
       >
+        {/* Upgrade Banner */}
+        {isProfileLimitReached && (
+          <UpgradeBanner 
+            message="You've reached your free profile limit (2/2)." 
+          />
+        )}
+
         {/* Header */}
         <motion.div className={styles.header} variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}>
           <div>
@@ -76,6 +91,12 @@ export default function DashboardPage() {
             <span className={styles.statValue}>{stats.lists}</span>
             <span className={styles.statLabel}>Generated Lists</span>
           </div>
+          {isPremium && (
+            <div className={`${styles.statCard} border-amber-500/20 bg-amber-500/5`}>
+              <span className={styles.statValue}>{stats.totalViews}</span>
+              <span className={styles.statLabel}>Total Page Views</span>
+            </div>
+          )}
         </motion.div>
 
         {/* Quick Actions */}
@@ -83,12 +104,12 @@ export default function DashboardPage() {
           <h2 className={styles.sectionTitle}>Quick Actions</h2>
           <div className={styles.actionsGrid}>
             {[
-              { icon: '👤', label: 'Add Profession Profile', href: '/dashboard/profiles/new', desc: 'Set up a new professional identity' },
+              { icon: '👤', label: 'Add Profession Profile', href: '/dashboard/profiles/new', desc: 'Set up a new professional identity', disabled: isProfileLimitReached },
               { icon: '✨', label: 'Generate Pricing', href: '/dashboard/generate', desc: 'Create an AI-powered price list' },
               { icon: '📋', label: 'View Saved Lists', href: '/dashboard/lists', desc: 'Browse and edit your saved lists' },
             ].map((a) => (
-              <Link key={a.href} href={a.href}>
-                <Card hover className={styles.actionCard}>
+              <Link key={a.href} href={a.disabled ? '#' : a.href} className={a.disabled ? 'opacity-50 cursor-not-allowed' : ''}>
+                <Card hover={!a.disabled} className={styles.actionCard}>
                   <div className={styles.actionIcon}>{a.icon}</div>
                   <div>
                     <div className={styles.actionLabel}>{a.label}</div>
@@ -111,8 +132,16 @@ export default function DashboardPage() {
               {recentLists.map((l) => (
                 <Link key={l.id} href={`/dashboard/lists/${l.id}`}>
                   <Card hover className={styles.listCard}>
-                    <div className={styles.listTitle}>
-                      {l.title} {l.is_public && <span title="Public" className={styles.publicIcon}>🌐</span>}
+                    <div className="flex justify-between items-start">
+                      <div className={styles.listTitle}>
+                        {l.title} {l.is_public && <span title="Public" className={styles.publicIcon}>🌐</span>}
+                         {isPremium && (
+                        <div className="text-xs text-premium bg-white flex justify-center gap-1 items-center p-2 px-3 rounded-full">
+                          <span>{l.views_count || 0}</span>
+                        </div>
+                      )}
+                      </div>
+                     
                     </div>
                     <div className={styles.listMeta}>
                       {l.professional_profiles?.profession} · {new Date(l.created_at).toLocaleDateString()}
