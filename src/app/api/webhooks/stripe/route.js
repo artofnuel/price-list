@@ -21,18 +21,22 @@ export async function POST(req) {
   console.log('--- DEBUG INFO ---')
   console.log('Header Signature exists:', !!sig)
   console.log('Webhook Secret exists:', !!webhookSecret)
+  if (webhookSecret) {
+    console.log('Webhook Secret (masked):', webhookSecret.substring(0, 8) + '...' + webhookSecret.substring(webhookSecret.length - 4))
+  }
   console.log('Payload Length:', payload?.length)
-  console.log('Payload starts with:', payload?.substring(0, 20))
+  console.log('Payload starts with:', payload?.substring(0, 30))
 
   let event
 
   try {
-    if (!sig || !webhookSecret) {
-      throw new Error('Missing signature or webhook secret')
-    }
+    if (!sig) throw new Error('Missing stripe-signature header')
+    if (!webhookSecret) throw new Error('Missing STRIPE_WEBHOOK_SECRET environment variable')
+
     event = stripe.webhooks.constructEvent(payload, sig, webhookSecret)
   } catch (err) {
     console.error(`Webhook Signature Verification Failed: ${err.message}`)
+    console.error('Check if the whsec_... key in Vercel matches the signing secret for this specific URL in Stripe.')
     return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 401 })
   }
 

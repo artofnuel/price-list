@@ -16,16 +16,23 @@ export async function POST(req) {
   const payload = await req.text()
   const signature = req.headers.get('x-paystack-signature')
 
+  console.log('--- PAYSTACK DEBUG INFO ---')
+  console.log('Header Signature length:', signature?.length)
+  console.log('Secret exists:', !!PAYSTACK_SECRET)
+
   const hash = crypto.createHmac('sha512', PAYSTACK_SECRET).update(payload).digest('hex')
 
   if (hash !== signature) {
     console.error('CRITICAL: Invalid Paystack signature')
+    console.log('Calculated Hash:', hash.substring(0, 10) + '...')
+    console.log('Received Signature:', signature?.substring(0, 10) + '...')
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
 
   const event = JSON.parse(payload)
-  console.log('--- PAYSTACK WEBHOOK EVENT ---')
+  console.log('--- PAYSTACK WEBHOOK EVENT VERIFIED ---')
   console.log('Event Type:', event.event)
+  console.log('Event Data exists:', !!event.data)
 
   if (event.event === 'charge.success') {
     const userId = event.data.metadata?.userId
