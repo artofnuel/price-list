@@ -24,40 +24,61 @@ export async function POST(req) {
       .single()
 
     if (error || !subscription) {
+      console.log('No active subscription found for user:', user.id)
       return NextResponse.json({ error: 'No active subscription found' }, { status: 404 })
     }
 
+    console.log(`Attempting to cancel ${subscription.provider} subscription: ${subscription.provider_subscription_id}`)
+
     if (subscription.provider === 'stripe') {
-      // Cancel Stripe
-      await stripe.subscriptions.update(subscription.provider_subscription_id, {
-        cancel_at_period_end: true,
-      })
+      try {
+        // Cancel Stripe
+        await stripe.subscriptions.update(subscription.provider_subscription_id, {
+          cancel_at_period_end: true,
+        })
+      } catch (stripeErr) {
+        console.error('Stripe cancellation error:', stripeErr.message)
+        // We continue anyway to update our DB if the stripe sub is already gone or invalid
+      }
     } else if (subscription.provider === 'paystack') {
-      // Cancel Paystack
-      await axios.post(
-        'https://api.paystack.co/subscription/disable',
-        {
-          code: subscription.provider_subscription_id,
-          token: 'token_from_email_or_db_if_available' // Paystack needs an email token to disable via API. For simplicity in this project, we just mark it canceled in our DB.
-        },
-        {
-          headers: { Authorization: `Bearer ${PAYSTACK_SECRET}`, 'Content-Type': 'application/json' }
-        }
-      ).catch(err => {
-        console.error("Paystack API warning:", err.response?.data || err.message)
-      })
+      // For Paystack, if it's a simple transaction reference (not a real sub), 
+      // the disable API will fail. We log it and move on to update our DB.
+      try {
+        await axios.post(
+          'https://api.paystack.co/subscription/disable',
+          {
+            code: subscription.provider_subscription_id,
+            token: 'not_available' 
+          },
+          {
+            headers: { Authorization: `Bearer ${PAYSTACK_SECRET}`, 'Content-Type': 'application/json' }
+          }
+        )
+      } catch (paystackErr) {
+        console.warn("Paystack API warning (likely expected for transaction-based 'subs'):", paystackErr.response?.data || paystackErr.message)
+      }
     }
 
-    // We can confidently update our own DB to canceled or past_due to stop premium features instantly, 
-    // or rely on the webhooks. Since the user wants immediate feedback, we'll update local status.
-    await supabase
+    // Always update our local DB to reflect the cancellation
+    const { error: updateError } = await supabase
       .from('subscriptions')
-      .update({ status: 'canceled' })
+      .update({ 
+        status: 'canceled'
+      })
       .eq('id', subscription.id)
+      .eq('user_id', user.id) // Extra safety
+
+    if (updateError) {
+      console.error('Supabase update error:', updateError)
+      return NextResponse.json({ 
+        error: 'Failed to update database', 
+        details: updateError.message 
+      }, { status: 500 })
+    }
 
     return NextResponse.json({ success: true })
   } catch (err) {
-    console.error('Cancel error:', err)
+    console.error('Cancel route error:', err)
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }

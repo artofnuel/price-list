@@ -21,10 +21,15 @@ export const useSubscriptionStore = create((set) => ({
       return;
     }
 
+    const isPremiumActive = data.plan_type === 'premium' && (
+      data.status === 'active' || 
+      (data.status === 'canceled' && data.current_period_end && new Date(data.current_period_end) > new Date())
+    );
+
     set({
       plan: data.plan_type || 'free',
       status: data.status,
-      isPremium: data.plan_type === 'premium' && data.status === 'active',
+      isPremium: isPremiumActive,
       renewalDate: data.current_period_end,
       provider: data.provider,
       loading: false,
